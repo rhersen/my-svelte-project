@@ -1,5 +1,6 @@
 <!--suppress HtmlUnknownAttribute -->
 <script>
+  import locations from './locations'
   import Trains from "./Trains.svelte"
 
   let result = {TrainAnnouncement: []};
@@ -22,4 +23,4 @@
 
 <button on:click={handleClick}>northbound</button>
 
-<Trains result={result}></Trains>
+<Trains result={result} stations={locations()}></Trains>
