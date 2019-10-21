@@ -6,26 +6,18 @@
   export let result;
   export let stations;
 
-  $: grouped = _.groupBy(
-      currentTrains(result.TrainAnnouncement, stations),
-      train => branchDivider(train, stations)
-  )
+  $: grouped = _.groupBy(currentTrains(result.TrainAnnouncement, stations), train => branchDivider(train, stations))
 
   function stationName(locationSignature, stations) {
-    return (
-        (stations &&
-            stations[locationSignature] &&
-            stations[locationSignature].AdvertisedShortLocationName) ||
-        locationSignature
-    )
+    return ((stations && stations[locationSignature] && stations[locationSignature].AdvertisedShortLocationName) || locationSignature)
   }
 </script>
 
-{#if result.TrainAnnouncement}
-  <p>There are {_.keys(grouped).length} announcements</p>
+{#each _.keys(grouped) as key}
+  <h3>{key}</h3>
   <ol>
-    {#each result.TrainAnnouncement as announcement}
+    {#each grouped[key] as announcement}
       <li>{announcement.AdvertisedTrainIdent} {announcement.ActivityType} {stationName(announcement.LocationSignature, stations)}</li>
     {/each}
   </ol>
-{/if}
+{/each}
