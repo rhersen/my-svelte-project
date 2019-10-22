@@ -47,6 +47,16 @@
   g.pos-c {
     transform: translate(-2px, -2px);
   }
+
+  rect.branch {
+    fill: #000;
+    stroke: red;
+    stroke-width: 0.02px
+  }
+
+  text.train {
+    font-family: Arial Narrow, Arial, sans-serif;
+  }
 </style>
 
 <g class={`pos-${position}`}>
@@ -67,6 +77,14 @@
             key={train.AdvertisedTrainIdent + 1}
         >
           {line1(train, stations)}
+        </tspan>
+        <tspan
+            x="0.05"
+            dy="0.3"
+            fill={color(train)}
+            key={train.AdvertisedTrainIdent + 2}
+        >
+          {line2(train, stations)}
         </tspan>
       {/each}
     {/if}
