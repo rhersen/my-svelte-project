@@ -52,5 +52,5 @@
     <text className="timestamp" textAnchor="middle" x="-1.5" y="-0.5">
     </text>
   </g>
+  <Trains result={result} stations={locations()} />
 </svg>
-<Trains result={result} stations={locations()} />
