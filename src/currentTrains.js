@@ -6,7 +6,9 @@ import * as wgs from "./wgs"
 
 export default function currentTrains(announcement, stations) {
   const grouped = groupBy(announcement, "AdvertisedTrainIdent")
-  const object = Object.keys(grouped).map(announcementsToObject).filter(property("ToLocation"))
+  const object = Object.keys(grouped)
+    .map(announcementsToObject)
+    .filter(property("ToLocation"))
   const sorted = sortTrains(object, direction(announcement), stations)
   return sorted.filter(hasNotArrivedAtDestination).filter(isPendel)
 
@@ -44,7 +46,8 @@ export default function currentTrains(announcement, stations) {
   function hasNotArrivedAtDestination(train) {
     return !(
       train.ActivityType === "Ankomst" &&
-      train.ToLocation.map(property("LocationName")).join() === train.LocationSignature
+      train.ToLocation.map(property("LocationName")).join() ===
+        train.LocationSignature
     )
   }
 

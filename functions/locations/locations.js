@@ -1692,19 +1692,24 @@ const array = [{"Advertised":true,"AdvertisedLocationName":"Arbrå","AdvertisedS
 
 exports.handler = async (event, context) => {
   try {
-    const subject = event.queryStringParameters.name || 'World'
+    const subject = event.queryStringParameters.name || "World"
 
     const locations = {}
     array.forEach(obj => {
       const match = /POINT \(([.\d]+) ([.\d]+)\)/.exec(obj.Geometry.WGS84)
       if (match) {
         const [, east, north] = match
-        locations[obj.LocationSignature] = {east, north, AdvertisedShortLocationName: obj.AdvertisedShortLocationName}
+        locations[obj.LocationSignature] = {
+          east,
+          north,
+          AdvertisedShortLocationName: obj.AdvertisedShortLocationName
+        }
       }
     })
 
     return {
-      statusCode: 200, body: JSON.stringify(locations)
+      statusCode: 200,
+      body: JSON.stringify(locations)
     }
   } catch (err) {
     return { statusCode: 500, body: err.toString() }

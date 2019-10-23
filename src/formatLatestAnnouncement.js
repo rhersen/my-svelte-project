@@ -1,15 +1,19 @@
-import {differenceInMinutes, parseISO} from "date-fns"
+import { differenceInMinutes, parseISO } from "date-fns"
 
 export function line1(train, stations) {
   if (!train) return "Aktuell information saknas"
 
-  return `${id(train)} mot ${train.ToLocation.map(loc => loc.LocationName).map(loc => stationName(loc, stations))} ${precision(train)}`
+  return `${id(train)} mot ${train.ToLocation.map(loc => loc.LocationName).map(
+    loc => stationName(loc, stations)
+  )} ${precision(train)}`
 }
 
 export function line2(train, stations) {
   if (!train) return "line2"
 
-  return `${activity(train)} ${location(train)} kl ${train.TimeAtLocation.substring(11, 16)}`
+  return `${activity(train)} ${location(
+    train
+  )} kl ${train.TimeAtLocation.substring(11, 16)}`
 
   function location(a) {
     return stationName(a.LocationSignature, stations)
@@ -21,13 +25,27 @@ function id(a) {
 }
 
 function stationName(locationSignature, stations) {
-  return ((stations && stations[locationSignature] && stations[locationSignature].AdvertisedShortLocationName) || locationSignature)
+  return (
+    (stations &&
+      stations[locationSignature] &&
+      stations[locationSignature].AdvertisedShortLocationName) ||
+    locationSignature
+  )
 }
 
 function precision(a) {
-  const delay = differenceInMinutes(parseISO(a.TimeAtLocation), parseISO(a.AdvertisedTimeAtLocation))
+  const delay = differenceInMinutes(
+    parseISO(a.TimeAtLocation),
+    parseISO(a.AdvertisedTimeAtLocation)
+  )
 
-  return delay === 1 ? "nästan i tid" : delay > 0 ? `${delay} minuter försenat` : delay < -1 ? "i god tid" : "i tid"
+  return delay === 1
+    ? "nästan i tid"
+    : delay > 0
+    ? `${delay} minuter försenat`
+    : delay < -1
+    ? "i god tid"
+    : "i tid"
 }
 
 function activity(a) {
