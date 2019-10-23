@@ -1,10 +1,16 @@
 <!--suppress HtmlUnknownAttribute -->
 <script>
-  import locations from './locations'
+  import { onMount } from 'svelte'
   import * as grid from "./grid"
   import Trains from "./Trains.svelte"
 
   let result = {TrainAnnouncement: []};
+  let locations = {};
+
+  onMount(async () => {
+    const res = await fetch(`.netlify/functions/locations`);
+    locations = await res.json();
+  });
 
   function getCurrent(direction) {
     return async () => {
@@ -52,5 +58,5 @@
     <text className="timestamp" textAnchor="middle" x="-1.5" y="-0.5">
     </text>
   </g>
-  <Trains result={result} stations={locations()} />
+  <Trains result={result} stations={locations} />
 </svg>
