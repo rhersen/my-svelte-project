@@ -1,15 +1,15 @@
 import groupBy from "lodash/groupBy"
 import maxBy from "lodash/maxBy"
 import orderBy from "lodash/orderBy"
+import property from "lodash/property"
 import * as wgs from "./wgs"
 
 export default function currentTrains(announcement, stations) {
   const grouped = groupBy(announcement, "AdvertisedTrainIdent")
-  const object = Object.keys(grouped).map(announcementsToObject).filter(toLocation)
-
+  const object = Object.keys(grouped).map(announcementsToObject).filter(property("ToLocation"))
   const sorted = sortTrains(object, direction(announcement), stations)
-
   return sorted.filter(hasNotArrivedAtDestination).filter(isPendel)
+
   function announcementsToObject(k) {
     const v = grouped[k]
     const actual = maxBy(
@@ -18,8 +18,8 @@ export default function currentTrains(announcement, stations) {
     )
 
     if (actual) {
-      const withToLocation = v.find(toLocation)
-      const withProductInformation = v.find(announcement => announcement.ProductInformation)
+      const withToLocation = v.find(property("ToLocation"))
+      const withProductInformation = v.find(property("ProductInformation"))
       return {
         ...actual,
         ToLocation:
@@ -44,7 +44,7 @@ export default function currentTrains(announcement, stations) {
   function hasNotArrivedAtDestination(train) {
     return !(
       train.ActivityType === "Ankomst" &&
-      train.ToLocation.map(location => location.LocationName).join() === train.LocationSignature
+      train.ToLocation.map(property("LocationName")).join() === train.LocationSignature
     )
   }
 
@@ -73,9 +73,5 @@ export default function currentTrains(announcement, stations) {
 
   function between(loc1, loc2) {
     return 0.5 * wgs.north(loc1, stations) + 0.5 * wgs.north(loc2, stations)
-  }
-
-  function toLocation(announcement) {
-    return announcement && announcement.ToLocation
   }
 }
