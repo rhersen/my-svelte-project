@@ -1,11 +1,13 @@
 <!--suppress HtmlUnknownAttribute -->
 <script>
-  import { onMount } from 'svelte'
+  import {onMount} from 'svelte'
   import * as grid from "./grid"
   import Trains from "./Trains.svelte"
 
   let result = {TrainAnnouncement: []};
   let locations = {};
+  let clicked;
+  let loaded;
 
   onMount(async () => {
     const res = await fetch(`.netlify/functions/locations`);
@@ -14,14 +16,20 @@
 
   function getCurrent(direction) {
     return async () => {
+      result = {TrainAnnouncement: []};
+      clicked = direction;
+      loaded = undefined;
+
       const res = await fetch(`.netlify/functions/node-fetch?direction=${direction}`);
       const json = await res.json();
 
       if (res.ok) {
         result = json;
+        loaded = direction;
       } else {
         throw new Error(json);
       }
+      clicked = undefined;
     }
   }
 </script>
@@ -43,12 +51,14 @@
 
 <svg viewBox="-4 -6 8 12">
   <polygon
+      class={ loaded === "n" ? "loaded" : clicked === "n" ? "clicked" : "idle" }
       points={grid.leftTriangle()}
       stroke="#005CFF"
       fill="#f5f5f5"
       on:click={getCurrent("n")}
   />
   <polygon
+      class={ loaded === "s" ? "loaded" : clicked === "s" ? "clicked" : "idle" }
       points={grid.rightTriangle()}
       stroke="#005CFF"
       fill="#f5f5f5"
@@ -58,5 +68,5 @@
     <text className="timestamp" textAnchor="middle" x="-1.5" y="-0.5">
     </text>
   </g>
-  <Trains result={result} stations={locations} />
+  <Trains result={result} stations={locations}/>
 </svg>
