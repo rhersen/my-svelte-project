@@ -1,10 +1,9 @@
-import _ from "lodash"
 import {differenceInMinutes, parseISO} from "date-fns"
 
 export function line1(train, stations) {
   if (!train) return "Aktuell information saknas"
 
-  return `${id(train)} mot ${_.map(_.map(train.ToLocation, "LocationName"), loc => stationName(loc, stations))} ${precision(train)}`
+  return `${id(train)} mot ${train.ToLocation.map(loc => loc.LocationName).map(loc => stationName(loc, stations))} ${precision(train)}`
 }
 
 export function line2(train, stations) {

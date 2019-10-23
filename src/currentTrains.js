@@ -1,21 +1,25 @@
-import _ from "lodash"
+import groupBy from "lodash/groupBy"
+import maxBy from "lodash/maxBy"
+import orderBy from "lodash/orderBy"
 import * as wgs from "./wgs"
 
 export default function currentTrains(announcement, stations) {
-  const grouped = _.groupBy(announcement, "AdvertisedTrainIdent")
-  const object = _.filter(_.map(grouped, announcementsToObject), "ToLocation")
-  const sorted = sortTrains(object, direction(announcement), stations)
-  return _.filter(_.reject(sorted, hasArrivedAtDestination), isPendel)
+  const grouped = groupBy(announcement, "AdvertisedTrainIdent")
+  const object = Object.keys(grouped).map(announcementsToObject).filter(toLocation)
 
-  function announcementsToObject(v) {
-    const actual = _.maxBy(
-      _.filter(v, "TimeAtLocation"),
+  const sorted = sortTrains(object, direction(announcement), stations)
+
+  return sorted.filter(hasNotArrivedAtDestination).filter(isPendel)
+  function announcementsToObject(k) {
+    const v = grouped[k]
+    const actual = maxBy(
+      v.filter(announcement => announcement.TimeAtLocation),
       a => a.TimeAtLocation + a.ActivityType
     )
 
     if (actual) {
-      const withToLocation = _.find(v, "ToLocation")
-      const withProductInformation = _.find(v, "ProductInformation")
+      const withToLocation = v.find(toLocation)
+      const withProductInformation = v.find(announcement => announcement.ProductInformation)
       return {
         ...actual,
         ToLocation:
@@ -37,10 +41,10 @@ export default function currentTrains(announcement, stations) {
     )
   }
 
-  function hasArrivedAtDestination(train) {
-    return (
+  function hasNotArrivedAtDestination(train) {
+    return !(
       train.ActivityType === "Ankomst" &&
-      _.map(train.ToLocation, "LocationName").join() === train.LocationSignature
+      train.ToLocation.map(location => location.LocationName).join() === train.LocationSignature
     )
   }
 
@@ -49,7 +53,7 @@ export default function currentTrains(announcement, stations) {
   }
 
   function sortTrains(object, dir) {
-    return _.orderBy(
+    return orderBy(
       object,
       [
         a => north(a.LocationSignature, stations),
@@ -69,5 +73,9 @@ export default function currentTrains(announcement, stations) {
 
   function between(loc1, loc2) {
     return 0.5 * wgs.north(loc1, stations) + 0.5 * wgs.north(loc2, stations)
+  }
+
+  function toLocation(announcement) {
+    return announcement && announcement.ToLocation
   }
 }

@@ -1,5 +1,5 @@
 <script>
-  import _ from "lodash"
+  import groupBy from "lodash/groupBy"
   import branchDivider from "./branchDivider"
   import currentTrains from "./currentTrains"
   import Branch from "./Branch.svelte"
@@ -7,7 +7,7 @@
   export let result;
   export let stations;
 
-  $: grouped = _.groupBy(currentTrains(result.TrainAnnouncement, stations), train => branchDivider(train, stations))
+  $: grouped = groupBy(currentTrains(result.TrainAnnouncement, stations), train => branchDivider(train, stations))
 
   let keys = ["nw", "ne", "sw", "se", "c"]
 
@@ -27,7 +27,7 @@
   {/each}
 </g>
 
-{#each _.keys(grouped) as key}
+{#each Object.keys(grouped) as key}
   <h3>{key}</h3>
   <ol>
     {#each grouped[key] as announcement}
