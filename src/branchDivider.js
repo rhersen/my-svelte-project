@@ -6,7 +6,7 @@ export default function branchDivider(train, stations) {
 
   if (n > 59.64) return "ne"
   if (n > 59.407) return `n${leftRight(location, 17.84)}`
-  if (n > 59.36) return `n${leftRight(location, 18)}`
+  if (n > 59.352) return `n${leftRight(location, 18.001)}`
   if (n < 59.17) return `s${leftRight(location, 17.84)}`
   if (n < 59.27) return `s${leftRight(location, 18)}`
   return "c"
